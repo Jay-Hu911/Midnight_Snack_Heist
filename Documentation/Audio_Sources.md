@@ -65,6 +65,10 @@ The following sounds were created by the student using Bfxr (https://www.bfxr.ne
 
 - SFX_Mouse_Move.wav
 - SFX_Eat_Crumb.wav
-- SFX_Defeat_Cat.wav (fulfils the assessment's eat-ghost/cat sound requirement)
+- SFX_Defeat_Cat.wav 
 - SFX_Eat_Bonus.wav
+
+- SFX_Mouse_Death.wav
+- SFX_Wall_Bump.wav
+
 

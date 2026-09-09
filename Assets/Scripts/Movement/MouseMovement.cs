@@ -4,84 +4,93 @@ public class MouseMovement : MonoBehaviour
 {
     [SerializeField] private float moveSpeed = 3f;
     [SerializeField] private Animator mouseAnimator;
+
     [SerializeField] private AudioSource moveAudioSource;
 
-    private readonly Vector3 startPosition = new Vector3(-12.5f, 11f, 0f);
+    private Vector3 moveStart;
+    private Vector3 moveTarget;
+    private float moveTimer;
 
-    private readonly Vector3[] waypoints =
-    {
-        new Vector3(-12.5f, 13f, 0f),
-        new Vector3(-7.5f, 13f, 0f),
-        new Vector3(-7.5f, 9f, 0f),
-        new Vector3(-12.5f, 9f, 0f)
-    };
-
-    private int targetIndex;
-    private Vector3 sectionStart;
-    private Vector3 sectionEnd;
-    private float sectionTime;
-    private float sectionDuration;
+    private float moveDuration;
+    private int direction;
 
     private void Start()
     {
-        transform.position = startPosition;
-        targetIndex = 0;
-        BeginSection();
+    transform.position = new Vector3(-12.5f, 11f, 0f);
 
-        if (moveAudioSource != null && moveAudioSource.clip != null)
-        {
-            moveAudioSource.loop = true;
-            moveAudioSource.Play();
-        }
+    ChooseNextTarget();
+
+    if(moveAudioSource != null)
+    {
+        moveAudioSource.loop = true;
+        moveAudioSource.Play();
+    }
     }
 
-    private void Update()
+
+private void Update()
+{
+    moveTimer += Time.deltaTime;
+
+    float progress =
+        moveTimer / moveDuration;
+
+    transform.position = Vector3.Lerp(
+        moveStart,
+        moveTarget,
+        progress
+    );
+
+    if (progress >= 1f)
     {
-        sectionTime += Time.deltaTime;
+        direction++;
 
-        float progress = Mathf.Clamp01(sectionTime / sectionDuration);
-        transform.position = Vector3.Lerp(sectionStart, sectionEnd, progress);
-
-        if (progress >= 1f)
+        if (direction > 3)
         {
-            transform.position = sectionEnd;
-            targetIndex = (targetIndex + 1) % waypoints.Length;
-            BeginSection();
-        }
-    }
-
-    private void BeginSection()
-    {
-        sectionStart = transform.position;
-        sectionEnd = waypoints[targetIndex];
-
-        float distance = Vector3.Distance(sectionStart, sectionEnd);
-        sectionDuration = distance / moveSpeed;
-        sectionTime = 0f;
-
-        PlayDirectionAnimation(sectionEnd - sectionStart);
-    }
-
-    private void PlayDirectionAnimation(Vector3 direction)
-    {
-        if (mouseAnimator == null)
-        {
-            return;
+            direction = 0;
         }
 
-        if (Mathf.Abs(direction.x) > Mathf.Abs(direction.y))
+        ChooseNextTarget();
+    }
+}
+
+private void ChooseNextTarget()
+{
+    moveStart = transform.position;
+    moveTimer = 0f;
+
+    if(direction == 0)
         {
-            mouseAnimator.Play(direction.x > 0f ? "Mouse_Right" : "Mouse_Left");
+            moveTarget = new Vector3(-12.5f, 13f, 0f);
+            PlayAnimation("Mouse_Up");
+        }
+    else if(direction == 1)
+        {
+            moveTarget = new Vector3(-7.5f, 13f, 0f);
+            PlayAnimation("Mouse_Right");
+        }
+    else if(direction == 2)
+        {
+            moveTarget = new Vector3(-7.5f, 9f, 0f);
+            PlayAnimation("Mouse_Down");
         }
         else
         {
-            mouseAnimator.Play(direction.y > 0f ? "Mouse_Up" : "Mouse_Down");
+            moveTarget = new Vector3(-12.5f, 9f, 0f);
+            PlayAnimation("Mouse_Left");
         }
+   float distance = Vector3.Distance(moveStart, moveTarget);
+
+    moveDuration = distance / moveSpeed;
+}
+
+private void PlayAnimation(string animationName)
+{
+    if (mouseAnimator != null)
+    {
+        mouseAnimator.Play(animationName);
     }
 
-    public void Configure(Animator animatorComponent, AudioSource audioSourceComponent)
-    {
-        mouseAnimator = animatorComponent;
-        moveAudioSource = audioSourceComponent;
-    }
+}
+
 }

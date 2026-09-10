@@ -4,7 +4,6 @@ using UnityEngine;
 public class RecreatedLevelMusicController : MonoBehaviour
 {
     public AudioSource musicSource;
-
     public AudioClip introMusic;
     public AudioClip normalMusic;
     public AudioClip scaredMusic;
@@ -20,6 +19,14 @@ public class RecreatedLevelMusicController : MonoBehaviour
         yield return new WaitForSeconds(introTime);
 
         PlayNormalMusic();
+    }
+
+    public void PlayIntroMusic()
+    {
+        musicSource.Stop();
+        musicSource.clip = introMusic;
+        musicSource.loop = false;
+        musicSource.Play();
     }
 
     public void PlayNormalMusic()
@@ -45,4 +52,5 @@ public class RecreatedLevelMusicController : MonoBehaviour
         musicSource.loop = true;
         musicSource.Play();
     }
+
 }

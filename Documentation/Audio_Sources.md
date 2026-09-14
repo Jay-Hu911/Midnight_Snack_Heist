@@ -69,7 +69,7 @@ Last confirmed: 14 September 2026
 
 ### Sound effects
 
-The student personally confirmed on 14 September 2026 that all six of the following sound effects were created by the student using Bfxr (https://www.bfxr.net/):
+All six of the following sound effects were created by the student using Bfxr (https://www.bfxr.net/):
 
 - SFX_Mouse_Move.wav
 - SFX_Eat_Crumb.wav

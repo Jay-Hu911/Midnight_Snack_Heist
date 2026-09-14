@@ -1,6 +1,6 @@
 # Audio Sources
 
-Last verified: 6 September 2026
+Last confirmed: 14 September 2026
 
 ## Downloaded music
 
@@ -59,9 +59,17 @@ Last verified: 6 September 2026
 - Content ID: Registered. Keep this source record as evidence of the license.
 - Verification: The source identifier in the macOS download metadata and the published duration match the imported project file.
 
-## Student-created sound effects
+## Student-created audio
 
-The following sounds were created by the student using Bfxr (https://www.bfxr.net/):
+### Music_Intro.wav
+
+- Creator: the student
+- Creation tool: Bfxr (https://www.bfxr.net/)
+- Project use: Intro music when RecreatedLevel begins
+
+### Sound effects
+
+The student personally confirmed on 14 September 2026 that all six of the following sound effects were created by the student using Bfxr (https://www.bfxr.net/):
 
 - SFX_Mouse_Move.wav
 - SFX_Eat_Crumb.wav
@@ -70,5 +78,3 @@ The following sounds were created by the student using Bfxr (https://www.bfxr.ne
 
 - SFX_Mouse_Death.wav
 - SFX_Wall_Bump.wav
-
-

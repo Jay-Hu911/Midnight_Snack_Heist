@@ -8,5 +8,10 @@ public class StartMenuController : MonoBehaviour
         SceneManager.LoadScene("RecreatedLevel");
     }
 
+    public void ReturnToMenu()
+    {
+    SceneManager.LoadScene("StartScene");
+    }
+
 
 }

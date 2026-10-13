@@ -31,6 +31,8 @@ public class PacStudentController : MonoBehaviour
             lastInput = Vector2Int.down;
         else if (keyboard.dKey.wasPressedThisFrame)
             lastInput = Vector2Int.right;
+
+        DecideNextMove();
     }
     
     private bool TryStartMove(Vector2Int direction)
@@ -64,5 +66,16 @@ public class PacStudentController : MonoBehaviour
             transform.position = moveTarget;
             isMoving = false;
         }
+    }
+
+    private void DecideNextMove()
+    {
+        if(isMoving||lastInput == Vector2Int.zero)
+            return;
+        if(TryStartMove(lastInput))
+            return;
+        if(TryStartMove(currentInput))
+            return;
+        currentInput = Vector2Int.zero;
     }
 }

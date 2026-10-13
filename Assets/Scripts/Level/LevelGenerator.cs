@@ -232,6 +232,21 @@ public class LevelGenerator : MonoBehaviour
         levelCamera.orthographicSize = requiredSize + cameraPadding;
     }
 
+    public bool CanPlayerEnter(Vector2 worldCenter)
+{
+    int column = Mathf.RoundToInt(13.5f - Mathf.Abs(worldCenter.x));
+    int row = Mathf.RoundToInt(14f - Mathf.Abs(worldCenter.y));
+
+    if (row < 0 || row >= levelMap.GetLength(0) ||
+        column < 0 || column >= levelMap.GetLength(1))
+    {
+        return false;
+    }
+
+    int tileType = levelMap[row, column];
+    return tileType == 5 || tileType == 6;
+}
+
    private readonly int[,] levelMap =
     {
         {1,2,2,2,2,2,2,2,2,2,2,2,2,7},

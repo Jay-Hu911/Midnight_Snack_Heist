@@ -13972,6 +13972,7 @@ GameObject:
   - component: {fileID: 410930576}
   - component: {fileID: 410930575}
   - component: {fileID: 410930574}
+  - component: {fileID: 410930577}
   m_Layer: 0
   m_Name: Mouse_Player
   m_TagString: Untagged
@@ -14172,6 +14173,21 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &410930577
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 410930571}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64ec04c59fcad4484a957f3559ec6c60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PacStudentController
+  levelGenerator: {fileID: 19722722}
+  playerAnimator: {fileID: 410930575}
+  moveAudioSource: {fileID: 410930574}
 --- !u!1 &417871898
 GameObject:
   m_ObjectHideFlags: 0

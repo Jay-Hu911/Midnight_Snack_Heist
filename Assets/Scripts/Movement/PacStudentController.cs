@@ -7,9 +7,12 @@ public class PacStudentController : MonoBehaviour
     [SerializeField] private LevelGenerator levelGenerator;
     [SerializeField] private Animator playerAnimator;
     [SerializeField] private AudioSource moveAudioSource;
+    [SerializeField] private ParticleSystem moveParticles;
 
     [SerializeField] private Transform manualLevel;
     [SerializeField] private AudioClip foodMoveClip;
+
+
 
     private AudioClip normalMoveClip;
     private readonly Dictionary<Vector2Int, Transform> foodsByCell = new();
@@ -49,6 +52,9 @@ public class PacStudentController : MonoBehaviour
        }
        playerAnimator.Play("Mouse_Right",0,0f);
        playerAnimator.speed = 0f;
+
+       if (moveParticles != null)
+        moveParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
     }
 
     private void Update()
@@ -105,6 +111,8 @@ public class PacStudentController : MonoBehaviour
         moveDuration = Vector3.Distance(moveStart, moveTarget) / moveSpeed;
         PlayMovementAnimation(direction);
         PlayMovementSound(target);
+        if (moveParticles != null && !moveParticles.isEmitting)
+        moveParticles.Play();
         currentInput = direction;
         isMoving = true;
         return true;
@@ -148,6 +156,10 @@ public class PacStudentController : MonoBehaviour
         if (moveAudioSource != null && moveAudioSource.isPlaying)
         {
             moveAudioSource.Stop();
+        }
+        if (moveParticles != null)
+        {
+            moveParticles.Stop(true, ParticleSystemStopBehavior.StopEmitting);
         }
     }
 

@@ -16,6 +16,15 @@ public class PacStudentController : MonoBehaviour
     private Vector2Int lastInput = Vector2Int.zero;
     private Vector2Int currentInput = Vector2Int.zero;
 
+    private void Start()
+    {
+       if(playerAnimator == null){
+        return;
+       }
+       playerAnimator.Play("Mouse_Right",0,0f);
+       playerAnimator.speed = 0f;
+    }
+
     private void Update()
     {   
         AdvanceMove();
@@ -34,6 +43,26 @@ public class PacStudentController : MonoBehaviour
 
         DecideNextMove();
     }
+
+    private void PlayMovementAnimation(Vector2Int direction)
+    {
+        if (playerAnimator == null) return;
+
+        string stateName;
+        if (direction == Vector2Int.up)
+            stateName = "Mouse_Up";
+        else if (direction == Vector2Int.down)
+            stateName = "Mouse_Down";
+        else if (direction == Vector2Int.left)
+            stateName = "Mouse_Left";
+        else
+            stateName = "Mouse_Right";
+
+        if (direction != currentInput || playerAnimator.speed == 0f)
+            playerAnimator.Play(stateName, 0, 0f);
+
+        playerAnimator.speed = 1f;
+    }
     
     private bool TryStartMove(Vector2Int direction)
     {
@@ -48,6 +77,7 @@ public class PacStudentController : MonoBehaviour
         moveTarget = target;
         moveElapsed = 0f;
         moveDuration = Vector3.Distance(moveStart, moveTarget) / moveSpeed;
+        PlayMovementAnimation(direction);
         currentInput = direction;
         isMoving = true;
         return true;
@@ -71,11 +101,21 @@ public class PacStudentController : MonoBehaviour
     private void DecideNextMove()
     {
         if(isMoving||lastInput == Vector2Int.zero)
+        {
             return;
+        }
         if(TryStartMove(lastInput))
+        {
             return;
-        if(TryStartMove(currentInput))
+        }    
+        if (TryStartMove(currentInput))
+        {
             return;
+        }
+        if (playerAnimator != null)
+        {
+            playerAnimator.speed = 0f;
+        }
         currentInput = Vector2Int.zero;
     }
 }

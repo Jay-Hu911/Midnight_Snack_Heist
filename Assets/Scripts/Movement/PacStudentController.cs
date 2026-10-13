@@ -1,11 +1,18 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections.Generic;
 
 public class PacStudentController : MonoBehaviour
 {
     [SerializeField] private LevelGenerator levelGenerator;
     [SerializeField] private Animator playerAnimator;
     [SerializeField] private AudioSource moveAudioSource;
+
+    [SerializeField] private Transform manualLevel;
+    [SerializeField] private AudioClip foodMoveClip;
+
+    private AudioClip normalMoveClip;
+    private readonly Dictionary<Vector2Int, Transform> foodsByCell = new();
 
     [SerializeField] private float moveSpeed = 5f;
     private Vector3 moveStart;
@@ -18,6 +25,25 @@ public class PacStudentController : MonoBehaviour
 
     private void Start()
     {
+        if (manualLevel != null)
+    {
+        foreach (SpriteRenderer sprite in manualLevel.GetComponentsInChildren<SpriteRenderer>())
+        {
+            string objectName = sprite.gameObject.name;
+            if (!objectName.EndsWith("_Type05") && !objectName.EndsWith("_Type06"))
+                continue;
+
+            foodsByCell[CellKey(sprite.transform.position)] = sprite.transform;
+        }
+    }
+
+        if (moveAudioSource != null)
+        {
+            normalMoveClip = moveAudioSource.clip;
+            moveAudioSource.loop = true;
+            moveAudioSource.Stop();
+        }
+
        if(playerAnimator == null){
         return;
        }
@@ -78,6 +104,7 @@ public class PacStudentController : MonoBehaviour
         moveElapsed = 0f;
         moveDuration = Vector3.Distance(moveStart, moveTarget) / moveSpeed;
         PlayMovementAnimation(direction);
+        PlayMovementSound(target);
         currentInput = direction;
         isMoving = true;
         return true;
@@ -117,5 +144,40 @@ public class PacStudentController : MonoBehaviour
             playerAnimator.speed = 0f;
         }
         currentInput = Vector2Int.zero;
+
+        if (moveAudioSource != null && moveAudioSource.isPlaying)
+        {
+            moveAudioSource.Stop();
+        }
+    }
+
+    private Vector2Int CellKey(Vector3 position)
+    {
+        return new Vector2Int(
+            Mathf.RoundToInt(position.x * 2f),
+            Mathf.RoundToInt(position.y * 2f)
+        );
+    }
+
+    private void PlayMovementSound(Vector3 target)
+    {
+        if (moveAudioSource == null) return;
+
+        bool hasFood = foodsByCell.TryGetValue(CellKey(target), out Transform food)
+                    && food != null
+                    && food.gameObject.activeInHierarchy;
+
+        AudioClip nextClip = hasFood ? foodMoveClip : normalMoveClip;
+        if (nextClip == null) return;
+
+        if (moveAudioSource.clip != nextClip)
+        {
+            moveAudioSource.clip = nextClip;
+            moveAudioSource.Play();
+        }
+        else if (!moveAudioSource.isPlaying)
+        {
+            moveAudioSource.Play();
+        }
     }
 }

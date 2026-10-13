@@ -14188,6 +14188,9 @@ MonoBehaviour:
   levelGenerator: {fileID: 19722722}
   playerAnimator: {fileID: 410930575}
   moveAudioSource: {fileID: 410930574}
+  manualLevel: {fileID: 1567525236}
+  foodMoveClip: {fileID: 8300000, guid: d175edf3eb82240b0b1924eda4cf4d14, type: 3}
+  moveSpeed: 5
 --- !u!1 &417871898
 GameObject:
   m_ObjectHideFlags: 0

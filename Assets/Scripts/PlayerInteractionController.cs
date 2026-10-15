@@ -7,6 +7,7 @@ public class PlayerInteractionController : MonoBehaviour
     [SerializeField] private Transform manualLevel;
     [SerializeField] private GameManager gameManager;
     [SerializeField] private GameSoundEffects soundEffects;
+    [SerializeField] private CherryController cherryController;
 
     private readonly Dictionary<Vector2Int, GameObject> normalFoodsByCell = new();
 
@@ -55,9 +56,19 @@ public class PlayerInteractionController : MonoBehaviour
 
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
+        if (cherryController == null) return;
 
+        GameObject bonus = cherryController.ActiveBonus;
+        if (bonus == null) return;
+        if (Vector2.Distance(transform.position, bonus.transform.position) > 0.5f) return;
+        if (!cherryController.TryCollectBonus()) return;
+
+        if (gameManager != null)
+            gameManager.AddScore(100);
+
+        if (soundEffects != null)
+            soundEffects.PlayEatBonus();
     }
 }

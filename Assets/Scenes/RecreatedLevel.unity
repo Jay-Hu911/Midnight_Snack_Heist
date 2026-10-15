@@ -14198,21 +14198,6 @@ MonoBehaviour:
   soundEffects: {fileID: 1738975018}
   wallBumpParticles: {fileID: 1803101144}
   moveSpeed: 5
---- !u!114 &900100001
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 410930571}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c045209c020c342409c2a4c3bcba8c8a, type: 3}
-  m_Name: ''
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerInteractionController
-  manualLevel: {fileID: 1567525236}
-  gameManager: {fileID: 1022050230}
-  soundEffects: {fileID: 1738975018}
 --- !u!1 &417871898
 GameObject:
   m_ObjectHideFlags: 0
@@ -27995,6 +27980,22 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &900100001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 410930571}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c045209c020c342409c2a4c3bcba8c8a, type: 3}
+  m_Name: ''
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerInteractionController
+  manualLevel: {fileID: 1567525236}
+  gameManager: {fileID: 1022050230}
+  soundEffects: {fileID: 1738975018}
+  cherryController: {fileID: 453918392}
 --- !u!1 &904860874
 GameObject:
   m_ObjectHideFlags: 0
@@ -31410,7 +31411,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0311e532558e44fcd9e0cbb57cdfbcfe, type: 3}
-  m_Name:
+  m_Name: ''
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   scoreText: {fileID: 777304800}
 --- !u!4 &1022050231

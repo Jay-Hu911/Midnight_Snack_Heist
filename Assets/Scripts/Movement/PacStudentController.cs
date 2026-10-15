@@ -105,11 +105,20 @@ public class PacStudentController : MonoBehaviour
         if (isMoving || direction == Vector2Int.zero || levelGenerator == null)
             return false;
 
-        Vector3 target = transform.position + new Vector3(direction.x, direction.y, 0f);
+        Vector3 start = transform.position;
+
+        if (levelGenerator.IsTunnelExit(new Vector2(start.x, start.y), direction))
+        {
+            start.x = -start.x;
+        }
+
+        Vector3 target = start + new Vector3(direction.x, direction.y, 0f);
         if (!levelGenerator.CanPlayerEnter(new Vector2(target.x, target.y)))
             return false;
 
-        moveStart = transform.position;
+        transform.position = start;
+        moveStart = start;
+
         moveTarget = target;
         moveElapsed = 0f;
         moveDuration = Vector3.Distance(moveStart, moveTarget) / moveSpeed;

@@ -10,6 +10,7 @@ public class PlayerInteractionController : MonoBehaviour
     [SerializeField] private CherryController cherryController;
 
     private readonly Dictionary<Vector2Int, GameObject> normalFoodsByCell = new();
+    private readonly Dictionary<Vector2Int, GameObject> powerFoodsByCell = new();
 
     private void Awake()
     {
@@ -17,28 +18,42 @@ public class PlayerInteractionController : MonoBehaviour
 
         foreach (SpriteRenderer sprite in manualLevel.GetComponentsInChildren<SpriteRenderer>())
         {
-            if (!sprite.gameObject.name.EndsWith("_Type05"))
-                continue;
+            string objectName = sprite.gameObject.name;
+            Vector2Int key = CellKey(sprite.transform.position);
 
-            normalFoodsByCell[CellKey(sprite.transform.position)] = sprite.gameObject;
+            if (objectName.EndsWith("_Type05"))
+                normalFoodsByCell[key] = sprite.gameObject;
+            else if (objectName.EndsWith("_Type06"))
+                powerFoodsByCell[key] = sprite.gameObject;
         }
-
     }
 
     public void CollectAt(Vector3 cellCenter)
     {
         Vector2Int key = CellKey(cellCenter);
 
-        if (!normalFoodsByCell.TryGetValue(key, out GameObject food) ||
-            food == null || !food.activeInHierarchy)
+        if (normalFoodsByCell.TryGetValue(key, out GameObject food) &&
+            food != null && food.activeInHierarchy)
+        {
+            normalFoodsByCell.Remove(key);
+            food.SetActive(false);
+
+            if (gameManager != null)
+                gameManager.AddScore(10);
+            if (soundEffects != null)
+                soundEffects.PlayEatCrumb();
+            return;
+        }
+
+        if (!powerFoodsByCell.TryGetValue(key, out GameObject powerFood) ||
+            powerFood == null || !powerFood.activeInHierarchy)
             return;
 
-        normalFoodsByCell.Remove(key);
-        food.SetActive(false);
+        powerFoodsByCell.Remove(key);
+        powerFood.SetActive(false);
 
         if (gameManager != null)
-            gameManager.AddScore(10);
-
+            gameManager.AddScore(50);
         if (soundEffects != null)
             soundEffects.PlayEatCrumb();
     }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 public class PacStudentController : MonoBehaviour
 {
+    [SerializeField] private PlayerInteractionController playerInteraction;
     [SerializeField] private LevelGenerator levelGenerator;
     [SerializeField] private Animator playerAnimator;
     [SerializeField] private AudioSource moveAudioSource;
@@ -115,6 +116,8 @@ public class PacStudentController : MonoBehaviour
         Vector3 target = start + new Vector3(direction.x, direction.y, 0f);
         if (!levelGenerator.CanPlayerEnter(new Vector2(target.x, target.y)))
             return false;
+        if (playerInteraction != null)
+        playerInteraction.CollectAt(transform.position);
 
         transform.position = start;
         moveStart = start;
@@ -144,6 +147,11 @@ public class PacStudentController : MonoBehaviour
         {
             transform.position = moveTarget;
             isMoving = false;
+
+            if (playerInteraction != null)
+            {
+            playerInteraction.CollectAt(moveTarget);
+            }
         }
     }
 

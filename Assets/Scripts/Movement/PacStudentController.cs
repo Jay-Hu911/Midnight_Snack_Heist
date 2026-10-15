@@ -12,6 +12,10 @@ public class PacStudentController : MonoBehaviour
     [SerializeField] private Transform manualLevel;
     [SerializeField] private AudioClip foodMoveClip;
 
+    [SerializeField] private GameSoundEffects soundEffects;
+    [SerializeField] private ParticleSystem wallBumpParticles;
+    private bool wallBumpPlayed;
+
 
 
     private AudioClip normalMoveClip;
@@ -115,6 +119,7 @@ public class PacStudentController : MonoBehaviour
         moveParticles.Play();
         currentInput = direction;
         isMoving = true;
+        wallBumpPlayed = false;
         return true;
     }
 
@@ -147,6 +152,9 @@ public class PacStudentController : MonoBehaviour
         {
             return;
         }
+        Vector2Int bumpDirection =
+        currentInput != Vector2Int.zero ? currentInput : lastInput;
+        PlayWallBump(bumpDirection);
         if (playerAnimator != null)
         {
             playerAnimator.speed = 0f;
@@ -160,6 +168,24 @@ public class PacStudentController : MonoBehaviour
         if (moveParticles != null)
         {
             moveParticles.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+        }
+    }
+
+    private void PlayWallBump(Vector2Int direction)
+    {
+        if (wallBumpPlayed || direction == Vector2Int.zero)
+            return;
+
+        wallBumpPlayed = true;
+
+        if (soundEffects != null)
+            soundEffects.PlayWallBump();
+
+        if (wallBumpParticles != null)
+        {
+            wallBumpParticles.transform.localPosition =
+                new Vector3(direction.x, direction.y, 0f) * 0.45f;
+            wallBumpParticles.Emit(8);
         }
     }
 

@@ -78,6 +78,9 @@ public class PlayerInteractionController : MonoBehaviour
 
     private void Update()
     {
+        if (gameManager != null)
+            gameManager.TryEatGhostsAt(transform.position);
+
         if (cherryController == null) return;
 
         GameObject bonus = cherryController.ActiveBonus;

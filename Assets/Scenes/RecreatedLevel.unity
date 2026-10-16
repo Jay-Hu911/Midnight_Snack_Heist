@@ -31450,6 +31450,8 @@ MonoBehaviour:
   - {fileID: 1025343965}
   - {fileID: 1052537809}
   - {fileID: 241197003}
+  soundEffects: {fileID: 1738975018}
+  musicController: {fileID: 1361338081}
 --- !u!4 &1022050231
 Transform:
   m_ObjectHideFlags: 0

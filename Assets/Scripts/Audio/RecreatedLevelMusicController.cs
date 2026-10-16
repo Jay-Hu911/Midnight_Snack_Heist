@@ -11,45 +11,43 @@ public class RecreatedLevelMusicController : MonoBehaviour
 
     private IEnumerator Start()
     {
-        musicSource.clip = introMusic;
-        musicSource.loop = false;
-        musicSource.Play();
+        PlayIntroMusic();
 
         float introTime = Mathf.Min(introMusic.length, 3f);
         yield return new WaitForSeconds(introTime);
 
-        PlayNormalMusic();
+        if (musicSource.clip == introMusic)
+            PlayNormalMusic();
     }
 
     public void PlayIntroMusic()
     {
-        musicSource.Stop();
-        musicSource.clip = introMusic;
-        musicSource.loop = false;
-        musicSource.Play();
+        PlayClip(introMusic, false);
     }
 
     public void PlayNormalMusic()
     {
-        musicSource.Stop();
-        musicSource.clip = normalMusic;
-        musicSource.loop = true;
-        musicSource.Play();
+        PlayClip(normalMusic, true);
     }
 
     public void PlayScaredMusic()
     {
-        musicSource.Stop();
-        musicSource.clip = scaredMusic;
-        musicSource.loop = true;
-        musicSource.Play();
+        PlayClip(scaredMusic, true);
     }
 
     public void PlayDefeatedMusic()
     {
+        PlayClip(defeatedMusic, true);
+    }
+
+    private void PlayClip(AudioClip clip, bool loop)
+    {
+        if (musicSource == null || clip == null) return;
+        if (musicSource.isPlaying && musicSource.clip == clip && musicSource.loop == loop) return;
+
         musicSource.Stop();
-        musicSource.clip = defeatedMusic;
-        musicSource.loop = true;
+        musicSource.clip = clip;
+        musicSource.loop = loop;
         musicSource.Play();
     }
 

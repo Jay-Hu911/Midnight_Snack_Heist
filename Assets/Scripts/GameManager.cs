@@ -5,6 +5,10 @@ public class GameManager : MonoBehaviour
 {
 
     [SerializeField] private Text scoreText;
+    [SerializeField] private Text scaredTimeText;
+    [SerializeField] private GhostStateController[] ghosts;
+
+    public float FearRemaining { get; private set; }
 
     private int score;
 
@@ -19,6 +23,19 @@ public class GameManager : MonoBehaviour
         RefreshScore();
     }
 
+    public void StartFear()
+    {
+        FearRemaining = 10f;
+        scaredTimeText.gameObject.SetActive(true);
+        scaredTimeText.text = "10";
+
+        foreach (GhostStateController ghost in ghosts)
+        {
+            if (ghost != null)
+                ghost.EnterScared();
+        }
+    }
+
     private void RefreshScore()
     {
         if(scoreText != null)
@@ -28,6 +45,9 @@ public class GameManager : MonoBehaviour
     }
     void Update()
     {
+        if (FearRemaining <= 0f) return;
 
+        FearRemaining = Mathf.Max(0f, FearRemaining - Time.deltaTime);
+        scaredTimeText.text = Mathf.CeilToInt(FearRemaining).ToString();
     }
 }

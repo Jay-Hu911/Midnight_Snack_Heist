@@ -8666,6 +8666,7 @@ GameObject:
   - component: {fileID: 241197000}
   - component: {fileID: 241197002}
   - component: {fileID: 241197001}
+  - component: {fileID: 241197003}
   m_Layer: 0
   m_Name: Cat04_Animated
   m_TagString: Untagged
@@ -8770,6 +8771,20 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &241197003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 241196999}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09e564c02c1c14654860352fe7930b91, type: 3}
+  m_Name: ''
+  m_EditorClassIdentifier: Assembly-CSharp::GhostStateController
+  ghostAnimator: {fileID: 241197001}
+  catId: Cat04
 --- !u!1 &241312733
 GameObject:
   m_ObjectHideFlags: 0
@@ -20051,6 +20066,7 @@ GameObject:
   - component: {fileID: 634357207}
   - component: {fileID: 634357209}
   - component: {fileID: 634357208}
+  - component: {fileID: 634357210}
   m_Layer: 0
   m_Name: Cat01_Animated
   m_TagString: Untagged
@@ -20155,6 +20171,20 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &634357210
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 634357206}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09e564c02c1c14654860352fe7930b91, type: 3}
+  m_Name: ''
+  m_EditorClassIdentifier: Assembly-CSharp::GhostStateController
+  ghostAnimator: {fileID: 634357208}
+  catId: Cat01
 --- !u!1 &643099737
 GameObject:
   m_ObjectHideFlags: 0
@@ -31414,6 +31444,12 @@ MonoBehaviour:
   m_Name: ''
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   scoreText: {fileID: 777304800}
+  scaredTimeText: {fileID: 1571344412}
+  ghosts:
+  - {fileID: 634357210}
+  - {fileID: 1025343965}
+  - {fileID: 1052537809}
+  - {fileID: 241197003}
 --- !u!4 &1022050231
 Transform:
   m_ObjectHideFlags: 0
@@ -31484,6 +31520,7 @@ GameObject:
   - component: {fileID: 1025343962}
   - component: {fileID: 1025343964}
   - component: {fileID: 1025343963}
+  - component: {fileID: 1025343965}
   m_Layer: 0
   m_Name: Cat02_Animated
   m_TagString: Untagged
@@ -31588,6 +31625,20 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &1025343965
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1025343961}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09e564c02c1c14654860352fe7930b91, type: 3}
+  m_Name: ''
+  m_EditorClassIdentifier: Assembly-CSharp::GhostStateController
+  ghostAnimator: {fileID: 1025343963}
+  catId: Cat02
 --- !u!1 &1027603623
 GameObject:
   m_ObjectHideFlags: 0
@@ -32775,6 +32826,7 @@ GameObject:
   - component: {fileID: 1052537806}
   - component: {fileID: 1052537808}
   - component: {fileID: 1052537807}
+  - component: {fileID: 1052537809}
   m_Layer: 0
   m_Name: Cat03_Animated
   m_TagString: Untagged
@@ -32879,6 +32931,20 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &1052537809
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1052537805}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09e564c02c1c14654860352fe7930b91, type: 3}
+  m_Name: ''
+  m_EditorClassIdentifier: Assembly-CSharp::GhostStateController
+  ghostAnimator: {fileID: 1052537807}
+  catId: Cat03
 --- !u!1 &1054059261
 GameObject:
   m_ObjectHideFlags: 0

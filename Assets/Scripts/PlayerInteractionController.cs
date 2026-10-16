@@ -55,7 +55,10 @@ public class PlayerInteractionController : MonoBehaviour
         powerFood.SetActive(false);
 
         if (gameManager != null)
+        {
             gameManager.AddScore(50);
+            gameManager.StartFear();
+        }
         if (soundEffects != null)
             soundEffects.PlayEatCrumb();
     }

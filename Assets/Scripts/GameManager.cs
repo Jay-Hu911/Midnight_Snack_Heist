@@ -1,34 +1,46 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
 
     [SerializeField] private Text scoreText;
+    [SerializeField] private Text timeText;
     [SerializeField] private Text scaredTimeText;
     [SerializeField] private GhostStateController[] ghosts;
     [SerializeField] private GameSoundEffects soundEffects;
     [SerializeField] private RecreatedLevelMusicController musicController;
     [SerializeField] private PacStudentController playerController;
     [SerializeField] private GameObject[] lifeIcons;
+    [SerializeField] private PlayerInteractionController playerInteraction;
+    [SerializeField] private Button exitButton;
 
     public float FearRemaining { get; private set; }
     public int Lives { get; private set; } = 3;
     public bool IsDeathSequenceActive { get; private set; }
     public bool IsGameOver { get; private set; }
-    public bool CanInteract => !IsDeathSequenceActive && !IsGameOver;
+    public bool HasGameplayStarted { get; private set; }
+    public bool CanInteract => HasGameplayStarted && !IsDeathSequenceActive && !IsGameOver;
+    public float ElapsedSeconds { get; private set; }
 
     private int score;
-    private Text gameOverText;
+    private GameObject overlay;
+    private Text overlayText;
 
     void Start()
     {
         RefreshScore();
         RefreshLives();
+        RefreshTime();
         if (scaredTimeText != null)
             scaredTimeText.gameObject.SetActive(false);
-        CreateGameOverText();
+        CreateOverlay();
+        if (playerController != null) playerController.SetGameplayEnabled(false);
+        foreach (GhostStateController ghost in ghosts)
+            if (ghost != null) ghost.SetPaused(true);
+        StartCoroutine(OpeningCountdown());
     }
 
     public void AddScore(int amount)
@@ -95,8 +107,7 @@ public class GameManager : MonoBehaviour
 
         if (Lives == 0)
         {
-            IsGameOver = true;
-            if (gameOverText != null) gameOverText.gameObject.SetActive(true);
+            BeginGameOver();
             yield break;
         }
 
@@ -117,24 +128,76 @@ public class GameManager : MonoBehaviour
             if (lifeIcons[i] != null) lifeIcons[i].SetActive(i < Lives);
     }
 
-    private void CreateGameOverText()
+    private void CreateOverlay()
     {
         if (scoreText == null || scoreText.canvas == null) return;
 
-        GameObject textObject = new GameObject("Game Over", typeof(RectTransform), typeof(Text));
-        textObject.transform.SetParent(scoreText.canvas.transform, false);
+        overlay = new GameObject("Game Overlay", typeof(RectTransform), typeof(Image));
+        overlay.transform.SetParent(scoreText.canvas.transform, false);
+        RectTransform background = overlay.GetComponent<RectTransform>();
+        background.anchorMin = Vector2.zero;
+        background.anchorMax = Vector2.one;
+        background.offsetMin = Vector2.zero;
+        background.offsetMax = Vector2.zero;
+        overlay.GetComponent<Image>().color = new Color(0.05f, 0.08f, 0.18f, 0.75f);
+
+        GameObject textObject = new GameObject("Overlay Text", typeof(RectTransform), typeof(Text));
+        textObject.transform.SetParent(overlay.transform, false);
         RectTransform rect = textObject.GetComponent<RectTransform>();
         rect.anchorMin = new Vector2(0.5f, 0.5f);
         rect.anchorMax = new Vector2(0.5f, 0.5f);
         rect.sizeDelta = new Vector2(500f, 100f);
 
-        gameOverText = textObject.GetComponent<Text>();
-        gameOverText.font = scoreText.font;
-        gameOverText.fontSize = 48;
-        gameOverText.alignment = TextAnchor.MiddleCenter;
-        gameOverText.color = Color.white;
-        gameOverText.text = "GAME OVER";
-        textObject.SetActive(false);
+        overlayText = textObject.GetComponent<Text>();
+        overlayText.font = scoreText.font;
+        overlayText.fontSize = 64;
+        overlayText.alignment = TextAnchor.MiddleCenter;
+        overlayText.color = Color.white;
+        overlayText.raycastTarget = false;
+        overlay.SetActive(false);
+    }
+
+    private IEnumerator OpeningCountdown()
+    {
+        if (overlay != null) overlay.SetActive(true);
+        string[] messages = { "3", "2", "1", "GO!" };
+        foreach (string message in messages)
+        {
+            if (overlayText != null) overlayText.text = message;
+            yield return new WaitForSeconds(1f);
+        }
+
+        if (overlay != null) overlay.SetActive(false);
+        if (musicController != null)
+        {
+            musicController.StopMusic();
+            musicController.PlayNormalMusic();
+        }
+        foreach (GhostStateController ghost in ghosts)
+            if (ghost != null) ghost.SetPaused(false);
+        if (playerController != null) playerController.SetGameplayEnabled(true);
+        HasGameplayStarted = true;
+    }
+
+    private void BeginGameOver()
+    {
+        if (IsGameOver) return;
+
+        IsGameOver = true;
+        if (playerController != null) playerController.SetGameplayEnabled(false);
+        foreach (GhostStateController ghost in ghosts)
+            if (ghost != null) ghost.SetPaused(true);
+        if (musicController != null) musicController.StopMusic();
+        if (exitButton != null) exitButton.interactable = false;
+        if (overlayText != null) overlayText.text = "GAME OVER";
+        if (overlay != null) overlay.SetActive(true);
+        StartCoroutine(ReturnToMenuAfterDelay());
+    }
+
+    private IEnumerator ReturnToMenuAfterDelay()
+    {
+        yield return new WaitForSecondsRealtime(3f);
+        SceneManager.LoadScene("StartScene");
     }
 
     private void RefreshScore()
@@ -144,9 +207,30 @@ public class GameManager : MonoBehaviour
             scoreText.text = score.ToString("D6");
         }
     }
+
+    private void RefreshTime()
+    {
+        if (timeText == null) return;
+
+        int centiseconds = Mathf.FloorToInt(ElapsedSeconds * 100f);
+        int minutes = centiseconds / 6000;
+        int seconds = centiseconds / 100 % 60;
+        int hundredths = centiseconds % 100;
+        timeText.text = $"{minutes:00}:{seconds:00}:{hundredths:00}";
+    }
+
     void Update()
     {
         if (!CanInteract) return;
+
+        ElapsedSeconds += Time.deltaTime;
+        RefreshTime();
+
+        if (playerInteraction != null && playerInteraction.RemainingFoodCount == 0)
+        {
+            BeginGameOver();
+            return;
+        }
 
         if (FearRemaining > 0f)
         {

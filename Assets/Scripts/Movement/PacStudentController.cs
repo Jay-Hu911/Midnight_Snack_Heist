@@ -248,11 +248,7 @@ public class PacStudentController : MonoBehaviour
 
     public void BeginDeath()
     {
-        CanMove = false;
-        isMoving = false;
-        if (moveAudioSource != null) moveAudioSource.Stop();
-        if (moveParticles != null)
-            moveParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        SetGameplayEnabled(false);
 
         if (wallBumpParticles != null)
         {
@@ -265,6 +261,18 @@ public class PacStudentController : MonoBehaviour
             playerAnimator.speed = 1f;
             playerAnimator.Play("Mouse_Dead", 0, 0f);
         }
+    }
+
+    public void SetGameplayEnabled(bool enabled)
+    {
+        CanMove = enabled;
+        if (enabled) return;
+
+        isMoving = false;
+        if (moveAudioSource != null) moveAudioSource.Stop();
+        if (moveParticles != null)
+            moveParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        if (playerAnimator != null) playerAnimator.speed = 0f;
     }
 
     public void ResetAfterDeath()

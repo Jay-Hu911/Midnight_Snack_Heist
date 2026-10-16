@@ -31444,6 +31444,7 @@ MonoBehaviour:
   m_Name: ''
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   scoreText: {fileID: 777304800}
+  timeText: {fileID: 1385554129}
   scaredTimeText: {fileID: 1571344412}
   ghosts:
   - {fileID: 634357210}
@@ -31457,6 +31458,8 @@ MonoBehaviour:
   - {fileID: 120237242}
   - {fileID: 1674586238}
   - {fileID: 1416251678}
+  playerInteraction: {fileID: 900100001}
+  exitButton: {fileID: 1469356973}
 --- !u!4 &1022050231
 Transform:
   m_ObjectHideFlags: 0

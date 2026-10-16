@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 
 public class RecreatedLevelMusicController : MonoBehaviour
@@ -9,20 +8,14 @@ public class RecreatedLevelMusicController : MonoBehaviour
     public AudioClip scaredMusic;
     public AudioClip defeatedMusic;
 
-    private IEnumerator Start()
+    private void Start()
     {
         PlayIntroMusic();
-
-        float introTime = Mathf.Min(introMusic.length, 3f);
-        yield return new WaitForSeconds(introTime);
-
-        if (musicSource.clip == introMusic)
-            PlayNormalMusic();
     }
 
     public void PlayIntroMusic()
     {
-        PlayClip(introMusic, false);
+        PlayClip(introMusic, true);
     }
 
     public void PlayNormalMusic()

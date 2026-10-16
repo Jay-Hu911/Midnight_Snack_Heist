@@ -12,6 +12,8 @@ public class PlayerInteractionController : MonoBehaviour
     private readonly Dictionary<Vector2Int, GameObject> normalFoodsByCell = new();
     private readonly Dictionary<Vector2Int, GameObject> powerFoodsByCell = new();
 
+    public int RemainingFoodCount => normalFoodsByCell.Count + powerFoodsByCell.Count;
+
     private void Awake()
     {
         if (manualLevel == null) return;

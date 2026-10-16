@@ -11,6 +11,28 @@ public class GhostStateController : MonoBehaviour
     public bool CanBeEaten => State == GhostState.Scared || State == GhostState.Recovering;
 
     private float deathRemaining;
+    private Vector3 startingPosition;
+
+    private void Awake()
+    {
+        startingPosition = transform.position;
+    }
+
+    public void SetPaused(bool paused)
+    {
+        if (ghostAnimator != null)
+            ghostAnimator.speed = paused ? 0f : 1f;
+    }
+
+    public void ResetForRound()
+    {
+        transform.position = startingPosition;
+        deathRemaining = 0f;
+        State = GhostState.Normal;
+        SetPaused(false);
+        if (ghostAnimator != null)
+            ghostAnimator.Play(catId + "_Normal_Right", 0, 0f);
+    }
 
     public void EnterNormal()
     {

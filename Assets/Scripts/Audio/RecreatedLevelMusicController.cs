@@ -40,6 +40,15 @@ public class RecreatedLevelMusicController : MonoBehaviour
         PlayClip(defeatedMusic, true);
     }
 
+    public void StopMusic()
+    {
+        if (musicSource != null)
+        {
+            musicSource.Stop();
+            musicSource.clip = null;
+        }
+    }
+
     private void PlayClip(AudioClip clip, bool loop)
     {
         if (musicSource == null || clip == null) return;

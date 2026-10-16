@@ -31452,6 +31452,11 @@ MonoBehaviour:
   - {fileID: 241197003}
   soundEffects: {fileID: 1738975018}
   musicController: {fileID: 1361338081}
+  playerController: {fileID: 410930577}
+  lifeIcons:
+  - {fileID: 120237242}
+  - {fileID: 1674586238}
+  - {fileID: 1416251678}
 --- !u!4 &1022050231
 Transform:
   m_ObjectHideFlags: 0

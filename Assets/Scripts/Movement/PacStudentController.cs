@@ -30,6 +30,14 @@ public class PacStudentController : MonoBehaviour
     private bool isMoving;
     private Vector2Int lastInput = Vector2Int.zero;
     private Vector2Int currentInput = Vector2Int.zero;
+    private Vector3 startingPosition;
+
+    public bool CanMove { get; private set; } = true;
+
+    private void Awake()
+    {
+        startingPosition = transform.position;
+    }
 
     private void Start()
     {
@@ -63,7 +71,9 @@ public class PacStudentController : MonoBehaviour
     }
 
     private void Update()
-    {   
+    {
+        if (!CanMove) return;
+
         AdvanceMove();
 
         Keyboard keyboard = Keyboard.current;
@@ -234,5 +244,52 @@ public class PacStudentController : MonoBehaviour
         {
             moveAudioSource.Play();
         }
+    }
+
+    public void BeginDeath()
+    {
+        CanMove = false;
+        isMoving = false;
+        if (moveAudioSource != null) moveAudioSource.Stop();
+        if (moveParticles != null)
+            moveParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+
+        if (wallBumpParticles != null)
+        {
+            wallBumpParticles.transform.localPosition = Vector3.zero;
+            wallBumpParticles.Emit(16);
+        }
+
+        if (playerAnimator != null)
+        {
+            playerAnimator.speed = 1f;
+            playerAnimator.Play("Mouse_Dead", 0, 0f);
+        }
+    }
+
+    public void ResetAfterDeath()
+    {
+        transform.position = startingPosition;
+        moveStart = startingPosition;
+        moveTarget = startingPosition;
+        moveElapsed = 0f;
+        moveDuration = 0f;
+        isMoving = false;
+        lastInput = Vector2Int.zero;
+        currentInput = Vector2Int.zero;
+        wallBumpPlayed = false;
+
+        if (moveAudioSource != null) moveAudioSource.Stop();
+        if (moveParticles != null)
+            moveParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        if (wallBumpParticles != null)
+            wallBumpParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        if (playerAnimator != null)
+        {
+            playerAnimator.Play("Mouse_Right", 0, 0f);
+            playerAnimator.speed = 0f;
+        }
+
+        CanMove = true;
     }
 }

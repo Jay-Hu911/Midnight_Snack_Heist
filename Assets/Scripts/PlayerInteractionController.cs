@@ -32,6 +32,8 @@ public class PlayerInteractionController : MonoBehaviour
 
     public void CollectAt(Vector3 cellCenter)
     {
+        if (gameManager != null && !gameManager.CanInteract) return;
+
         Vector2Int key = CellKey(cellCenter);
 
         if (normalFoodsByCell.TryGetValue(key, out GameObject food) &&
@@ -79,7 +81,10 @@ public class PlayerInteractionController : MonoBehaviour
     private void Update()
     {
         if (gameManager != null)
+        {
             gameManager.TryEatGhostsAt(transform.position);
+            if (!gameManager.CanInteract) return;
+        }
 
         if (cherryController == null) return;
 

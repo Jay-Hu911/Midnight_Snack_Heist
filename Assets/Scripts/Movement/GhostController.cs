@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 [RequireComponent(typeof(GhostStateController))]
 public class GhostController : MonoBehaviour
@@ -25,14 +26,64 @@ public class GhostController : MonoBehaviour
     private bool isRoaming;
     private Vector2Int currentDirection = Vector2Int.zero;
 
+    private Vector3[] exitRoute;
+    private int exitRouteIndex;
+    private bool isLeavingHouse;
+
     public int GhostNumber => ghostNumber;
     public Vector3 HomePosition => homePosition;
 
     public void BeginRoaming()
     {
         isRoaming = true;
+
+        // 测试时幽灵也可能被放在普通走廊；只有在出生点才执行离巢路线。
+        if ((transform.position - homePosition).sqrMagnitude > 0.01f)
+            return;
+
+        BuildExitRoute();
+        exitRouteIndex = 0;
+        isLeavingHouse = true;
+        currentDirection = Vector2Int.zero;
     }
 
+    public void ResetMovementForRound()
+    {
+        isMoving = false;
+        isRoaming = false;
+        isLeavingHouse = false;
+        exitRouteIndex = 0;
+        exitRoute = null;
+        moveElapsed = 0f;
+        currentDirection = Vector2Int.zero;
+    }
+
+    private void BuildExitRoute()
+    {
+        float side = ghostNumber == 1 || ghostNumber == 3 ? 1f : -1f;
+        float gateX = Mathf.Sign(homePosition.x) * 0.5f;
+        float laneX = Mathf.Sign(homePosition.x) * 1.5f;
+        float firstY = side > 0f ? 1f : 0f;
+        float z = homePosition.z;
+
+        List<Vector3> route = new List<Vector3>();
+        route.Add(new Vector3(homePosition.x, firstY, z));
+
+        if (Mathf.Abs(homePosition.x - gateX) > 0.01f)
+            route.Add(new Vector3(gateX, firstY, z));
+
+        if (side < 0f)
+            route.Add(new Vector3(gateX, -1f, z));
+
+        route.Add(new Vector3(gateX, side * 2f, z)); // Ghost Wall
+        route.Add(new Vector3(gateX, side * 3f, z));
+        route.Add(new Vector3(laneX, side * 3f, z));
+        route.Add(new Vector3(laneX, side * 4f, z));
+        route.Add(new Vector3(laneX, side * 5f, z));
+        route.Add(new Vector3(laneX, side * 6f, z)); // 普通走廊
+
+        exitRoute = route.ToArray();
+    }
     private void Awake()
     {
         homePosition = transform.position;
@@ -40,14 +91,28 @@ public class GhostController : MonoBehaviour
 
     private void Update()
     {
-        if (!isRoaming || gameManager == null || !gameManager.CanInteract ||
-            ghostState == null || ghostState.State == GhostStateController.GhostState.Dead)
-            return;
+        if (gameManager == null || !gameManager.CanInteract ||
+        ghostState == null || ghostState.State == GhostStateController.GhostState.Dead)
+        return;
+
+        if (!isRoaming)
+            BeginRoaming();
 
         if (isMoving)
         {
             AdvanceMove();
             if (isMoving) return;
+        }
+
+        if (isLeavingHouse)
+        {
+            if (exitRouteIndex < exitRoute.Length)
+            {
+                StartNextExitMove();
+                return;
+            }
+
+            isLeavingHouse = false;
         }
 
         ChooseNextCell();
@@ -66,7 +131,20 @@ public class GhostController : MonoBehaviour
             isMoving = false;
         }
     }
+    private void StartNextExitMove()
+    {
+        moveStart = transform.position;
+        moveTarget = exitRoute[exitRouteIndex];
+        moveElapsed = 0f;
+        isMoving = true;
+        exitRouteIndex++;
 
+        Vector3 difference = moveTarget - moveStart;
+        if (Mathf.Abs(difference.x) > 0.01f)
+            currentDirection = difference.x > 0f ? Vector2Int.right : Vector2Int.left;
+        else
+            currentDirection = difference.y > 0f ? Vector2Int.up : Vector2Int.down;
+    }
     private void ChooseNextCell()
     {
         if (levelGenerator == null) return;

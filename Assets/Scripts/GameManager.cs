@@ -100,6 +100,7 @@ public class GameManager : MonoBehaviour
         if (playerController != null) playerController.BeginDeath();
         foreach (GhostStateController ghost in ghosts)
             if (ghost != null) ghost.SetPaused(true);
+
         if (musicController != null) musicController.StopMusic();
         if (soundEffects != null) soundEffects.PlayMouseDeath();
 
@@ -113,9 +114,17 @@ public class GameManager : MonoBehaviour
 
         FearRemaining = 0f;
         if (scaredTimeText != null)
-            scaredTimeText.gameObject.SetActive(false);
+        scaredTimeText.gameObject.SetActive(false);
+
         foreach (GhostStateController ghost in ghosts)
-            if (ghost != null) ghost.ResetForRound();
+        {
+            if (ghost == null) continue;
+            ghost.ResetForRound();
+
+            GhostController movement = ghost.GetComponent<GhostController>();
+            if (movement != null)
+                movement.ResetMovementForRound();
+        }
         if (playerController != null) playerController.ResetAfterDeath();
 
         IsDeathSequenceActive = false;

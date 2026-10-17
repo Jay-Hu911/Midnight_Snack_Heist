@@ -23,6 +23,7 @@ public class GhostController : MonoBehaviour
     private float moveElapsed;
     private bool isMoving;
     private bool isRoaming;
+    private Vector2Int currentDirection = Vector2Int.zero;
 
     public int GhostNumber => ghostNumber;
     public Vector3 HomePosition => homePosition;
@@ -70,17 +71,38 @@ public class GhostController : MonoBehaviour
     {
         if (levelGenerator == null) return;
 
+        Vector2Int reverse = -currentDirection;
+        Vector2Int chosen = Vector2Int.zero;
+
         foreach (Vector2Int direction in Directions)
         {
-            Vector3 next = transform.position + new Vector3(direction.x, direction.y, 0f);
-            if (!levelGenerator.CanPlayerEnter(new Vector2(next.x, next.y)))
-                continue;
+            if (direction == reverse) continue;
 
-            moveStart = transform.position;
-            moveTarget = next;
-            moveElapsed = 0f;
-            isMoving = true;
-            return;
+            Vector3 next = transform.position +
+                new Vector3(direction.x, direction.y, 0f);
+
+            if (levelGenerator.CanPlayerEnter(new Vector2(next.x, next.y)))
+            {
+                chosen = direction;
+                break;
+            }
         }
+
+        if (chosen == Vector2Int.zero && currentDirection != Vector2Int.zero)
+        {
+            Vector3 back = transform.position +
+                new Vector3(reverse.x, reverse.y, 0f);
+
+            if (levelGenerator.CanPlayerEnter(new Vector2(back.x, back.y)))
+                chosen = reverse;
+        }
+
+        if (chosen == Vector2Int.zero) return;
+
+        moveStart = transform.position;
+        moveTarget = moveStart + new Vector3(chosen.x, chosen.y, 0f);
+        moveElapsed = 0f;
+        currentDirection = chosen;
+        isMoving = true;
     }
 }

@@ -169,10 +169,7 @@ public class GameManager : MonoBehaviour
 
         if (overlay != null) overlay.SetActive(false);
         if (musicController != null)
-        {
-            musicController.StopMusic();
             musicController.PlayNormalMusic();
-        }
         foreach (GhostStateController ghost in ghosts)
             if (ghost != null) ghost.SetPaused(false);
         if (playerController != null) playerController.SetGameplayEnabled(true);
@@ -184,6 +181,7 @@ public class GameManager : MonoBehaviour
         if (IsGameOver) return;
 
         IsGameOver = true;
+        SaveBestRecord("Level1");
         if (playerController != null) playerController.SetGameplayEnabled(false);
         foreach (GhostStateController ghost in ghosts)
             if (ghost != null) ghost.SetPaused(true);
@@ -192,6 +190,27 @@ public class GameManager : MonoBehaviour
         if (overlayText != null) overlayText.text = "GAME OVER";
         if (overlay != null) overlay.SetActive(true);
         StartCoroutine(ReturnToMenuAfterDelay());
+    }
+
+    private void SaveBestRecord(string levelName)
+    {
+        string scoreKey = levelName + "_BestScore";
+        string timeKey = levelName + "_BestTime";
+        int currentTime = Mathf.FloorToInt(ElapsedSeconds * 100f);
+
+        if (PlayerPrefs.HasKey(scoreKey))
+        {
+            int bestScore = PlayerPrefs.GetInt(scoreKey);
+            int bestTime = PlayerPrefs.GetInt(timeKey, int.MaxValue);
+
+            if (score < bestScore ||
+                (score == bestScore && currentTime >= bestTime))
+                return;
+        }
+
+        PlayerPrefs.SetInt(scoreKey, score);
+        PlayerPrefs.SetInt(timeKey, currentTime);
+        PlayerPrefs.Save();
     }
 
     private IEnumerator ReturnToMenuAfterDelay()

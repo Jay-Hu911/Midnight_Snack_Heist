@@ -2157,6 +2157,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f01293ba55a544616862e91d737873e1, type: 3}
   m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::StartMenuController
+  level1RecordText: {fileID: 3000000068}
+  level2RecordText: {fileID: 3000000072}
 --- !u!95 &4000000000
 Animator:
   serializedVersion: 7

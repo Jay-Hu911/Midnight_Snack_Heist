@@ -15,7 +15,7 @@ public class RecreatedLevelMusicController : MonoBehaviour
 
     public void PlayIntroMusic()
     {
-        PlayClip(introMusic, true);
+        PlayClip(introMusic, false);
     }
 
     public void PlayNormalMusic()

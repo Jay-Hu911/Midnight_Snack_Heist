@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 public class PacStudentController : MonoBehaviour
 {
+    [SerializeField] private PlayerInteractionController playerInteraction;
     [SerializeField] private LevelGenerator levelGenerator;
     [SerializeField] private Animator playerAnimator;
     [SerializeField] private AudioSource moveAudioSource;
@@ -11,6 +12,10 @@ public class PacStudentController : MonoBehaviour
 
     [SerializeField] private Transform manualLevel;
     [SerializeField] private AudioClip foodMoveClip;
+
+    [SerializeField] private GameSoundEffects soundEffects;
+    [SerializeField] private ParticleSystem wallBumpParticles;
+    private bool wallBumpPlayed;
 
 
 
@@ -25,6 +30,14 @@ public class PacStudentController : MonoBehaviour
     private bool isMoving;
     private Vector2Int lastInput = Vector2Int.zero;
     private Vector2Int currentInput = Vector2Int.zero;
+    private Vector3 startingPosition;
+
+    public bool CanMove { get; private set; } = true;
+
+    private void Awake()
+    {
+        startingPosition = transform.position;
+    }
 
     private void Start()
     {
@@ -58,7 +71,9 @@ public class PacStudentController : MonoBehaviour
     }
 
     private void Update()
-    {   
+    {
+        if (!CanMove) return;
+
         AdvanceMove();
 
         Keyboard keyboard = Keyboard.current;
@@ -101,11 +116,22 @@ public class PacStudentController : MonoBehaviour
         if (isMoving || direction == Vector2Int.zero || levelGenerator == null)
             return false;
 
-        Vector3 target = transform.position + new Vector3(direction.x, direction.y, 0f);
+        Vector3 start = transform.position;
+
+        if (levelGenerator.IsTunnelExit(new Vector2(start.x, start.y), direction))
+        {
+            start.x = -start.x;
+        }
+
+        Vector3 target = start + new Vector3(direction.x, direction.y, 0f);
         if (!levelGenerator.CanPlayerEnter(new Vector2(target.x, target.y)))
             return false;
+        if (playerInteraction != null)
+        playerInteraction.CollectAt(transform.position);
 
-        moveStart = transform.position;
+        transform.position = start;
+        moveStart = start;
+
         moveTarget = target;
         moveElapsed = 0f;
         moveDuration = Vector3.Distance(moveStart, moveTarget) / moveSpeed;
@@ -115,6 +141,7 @@ public class PacStudentController : MonoBehaviour
         moveParticles.Play();
         currentInput = direction;
         isMoving = true;
+        wallBumpPlayed = false;
         return true;
     }
 
@@ -130,6 +157,11 @@ public class PacStudentController : MonoBehaviour
         {
             transform.position = moveTarget;
             isMoving = false;
+
+            if (playerInteraction != null)
+            {
+            playerInteraction.CollectAt(moveTarget);
+            }
         }
     }
 
@@ -147,6 +179,9 @@ public class PacStudentController : MonoBehaviour
         {
             return;
         }
+        Vector2Int bumpDirection =
+        currentInput != Vector2Int.zero ? currentInput : lastInput;
+        PlayWallBump(bumpDirection);
         if (playerAnimator != null)
         {
             playerAnimator.speed = 0f;
@@ -160,6 +195,24 @@ public class PacStudentController : MonoBehaviour
         if (moveParticles != null)
         {
             moveParticles.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+        }
+    }
+
+    private void PlayWallBump(Vector2Int direction)
+    {
+        if (wallBumpPlayed || direction == Vector2Int.zero)
+            return;
+
+        wallBumpPlayed = true;
+
+        if (soundEffects != null)
+            soundEffects.PlayWallBump();
+
+        if (wallBumpParticles != null)
+        {
+            wallBumpParticles.transform.localPosition =
+                new Vector3(direction.x, direction.y, 0f) * 0.45f;
+            wallBumpParticles.Emit(8);
         }
     }
 
@@ -191,5 +244,60 @@ public class PacStudentController : MonoBehaviour
         {
             moveAudioSource.Play();
         }
+    }
+
+    public void BeginDeath()
+    {
+        SetGameplayEnabled(false);
+
+        if (wallBumpParticles != null)
+        {
+            wallBumpParticles.transform.localPosition = Vector3.zero;
+            wallBumpParticles.Emit(16);
+        }
+
+        if (playerAnimator != null)
+        {
+            playerAnimator.speed = 1f;
+            playerAnimator.Play("Mouse_Dead", 0, 0f);
+        }
+    }
+
+    public void SetGameplayEnabled(bool enabled)
+    {
+        CanMove = enabled;
+        if (enabled) return;
+
+        isMoving = false;
+        if (moveAudioSource != null) moveAudioSource.Stop();
+        if (moveParticles != null)
+            moveParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        if (playerAnimator != null) playerAnimator.speed = 0f;
+    }
+
+    public void ResetAfterDeath()
+    {
+        transform.position = startingPosition;
+        moveStart = startingPosition;
+        moveTarget = startingPosition;
+        moveElapsed = 0f;
+        moveDuration = 0f;
+        isMoving = false;
+        lastInput = Vector2Int.zero;
+        currentInput = Vector2Int.zero;
+        wallBumpPlayed = false;
+
+        if (moveAudioSource != null) moveAudioSource.Stop();
+        if (moveParticles != null)
+            moveParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        if (wallBumpParticles != null)
+            wallBumpParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        if (playerAnimator != null)
+        {
+            playerAnimator.Play("Mouse_Right", 0, 0f);
+            playerAnimator.speed = 0f;
+        }
+
+        CanMove = true;
     }
 }

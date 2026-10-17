@@ -82,14 +82,14 @@ public class LevelGenerator : MonoBehaviour
     }
 
     private bool IsWall(int tileType)
-{
-    return tileType == 1
-        || tileType == 2
-        || tileType == 3
-        || tileType == 4
-        || tileType == 7
-        || tileType == 8;
-}
+    {
+        return tileType == 1
+            || tileType == 2
+            || tileType == 3
+            || tileType == 4
+            || tileType == 7
+            || tileType == 8;
+    }
 
     private bool HasWall(int row, int column)
     {
@@ -233,19 +233,33 @@ public class LevelGenerator : MonoBehaviour
     }
 
     public bool CanPlayerEnter(Vector2 worldCenter)
-{
-    int column = Mathf.RoundToInt(13.5f - Mathf.Abs(worldCenter.x));
-    int row = Mathf.RoundToInt(14f - Mathf.Abs(worldCenter.y));
-
-    if (row < 0 || row >= levelMap.GetLength(0) ||
-        column < 0 || column >= levelMap.GetLength(1))
     {
-        return false;
+        int column = Mathf.RoundToInt(13.5f - Mathf.Abs(worldCenter.x));
+        int row = Mathf.RoundToInt(14f - Mathf.Abs(worldCenter.y));
+
+        if (row < 0 || row >= levelMap.GetLength(0) ||
+            column < 0 || column >= levelMap.GetLength(1))
+        {
+            return false;
+        }
+
+        int tileType = levelMap[row, column];
+        return tileType == 5 || tileType == 6 ||
+        (row == 14 && column <= 5);
     }
 
-    int tileType = levelMap[row, column];
-    return tileType == 5 || tileType == 6;
-}
+    public bool IsTunnelExit(Vector2 worldCenter, Vector2Int direction)
+    {
+        if (Mathf.Abs(worldCenter.y) > 0.01f)
+            return false;
+
+        bool leftExit = Mathf.Abs(worldCenter.x + 13.5f) < 0.01f
+                        && direction == Vector2Int.left;
+        bool rightExit = Mathf.Abs(worldCenter.x - 13.5f) < 0.01f
+                        && direction == Vector2Int.right;
+
+        return leftExit || rightExit;
+    }
 
    private readonly int[,] levelMap =
     {

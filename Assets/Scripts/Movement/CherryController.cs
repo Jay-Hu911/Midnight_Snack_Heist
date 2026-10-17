@@ -1,13 +1,24 @@
 using UnityEngine;
-using System.Collections;  
+using System.Collections;
 
 public class CherryController : MonoBehaviour
 {
-    [SerializeField] private GameObject bonusPrefab; // Reference to the bonus prefab
-    [SerializeField] private GameObject activeBonus; // Reference to the currently active bonus
-    private Vector3 endPoint; // The endpoint for the bonus to move towards
-    [SerializeField] private float bonusSpeed = 6f; // Speed at which the bonus moves
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    [SerializeField] private GameObject bonusPrefab;
+    [SerializeField] private GameObject activeBonus;
+    public GameObject ActiveBonus => activeBonus;
+
+    public bool TryCollectBonus()
+    {
+        if (activeBonus == null) return false;
+
+        GameObject collected = activeBonus;
+        activeBonus = null;
+        Destroy(collected);
+        return true;
+    }
+    private Vector3 endPoint;
+    [SerializeField] private float bonusSpeed = 6f;
+
     void Start()
     {
         StartCoroutine(SpawnLoop());
@@ -20,7 +31,7 @@ public class CherryController : MonoBehaviour
 
         while (true)
         {
-            yield return new WaitForSeconds(5f); // Wait for 10 seconds before spawning the bonus
+            yield return new WaitForSeconds(5f);
             Vector3 startPoint = ChooseStartPoint();
             endPoint = -startPoint.normalized * 35f;
             activeBonus = Instantiate(bonusPrefab, startPoint, Quaternion.identity);
@@ -33,7 +44,7 @@ public class CherryController : MonoBehaviour
     {
         float duration = Vector3.Distance(start, target) / Mathf.Max(0.1f, bonusSpeed);
         float elapsed = 0f;
-        
+
         while (elapsed < duration && activeBonus != null)
         {
             elapsed += Time.deltaTime;
@@ -42,10 +53,10 @@ public class CherryController : MonoBehaviour
             yield return null;
         }
 
-        if (activeBonus != null) 
-        { 
-            activeBonus.transform.position = target; 
-            Destroy(activeBonus); 
+        if (activeBonus != null)
+        {
+            activeBonus.transform.position = target;
+            Destroy(activeBonus);
         }
     }
     private Vector3 ChooseStartPoint()
@@ -63,6 +74,6 @@ public class CherryController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 }

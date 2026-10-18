@@ -96,9 +96,14 @@ public class GhostController : MonoBehaviour
 
     private void Update()
     {
-        if (gameManager == null || !gameManager.CanInteract ||
-            ghostState == null || ghostState.State == GhostStateController.GhostState.Dead)
+        if (gameManager == null || !gameManager.CanInteract || ghostState == null)
             return;
+
+        if (ghostState.State == GhostStateController.GhostState.Dead)
+        {
+            MoveDeadHome();
+            return;
+        }
 
         if (!isRoaming)
             BeginRoaming();
@@ -121,6 +126,17 @@ public class GhostController : MonoBehaviour
         }
 
         ChooseNextCell();
+    }
+
+    private void MoveDeadHome()
+    {
+        // 返巢不走格子路线，因此也不会被墙壁阻挡。
+        isMoving = false;
+        isRoaming = false;
+        isLeavingHouse = false;
+        currentDirection = Vector2Int.zero;
+        transform.position = Vector3.MoveTowards(
+            transform.position, homePosition, moveSpeed * Time.deltaTime);
     }
 
     private void AdvanceMove()

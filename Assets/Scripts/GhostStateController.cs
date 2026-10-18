@@ -67,21 +67,31 @@ public class GhostStateController : MonoBehaviour
         ghostAnimator.Play(catId + "_Dead");
     }
 
-    public bool TickDeath(float deltaTime, float fearRemaining)
+    public void Revive(float fearRemaining)
     {
-        if (State != GhostState.Dead) return false;
+        if (State != GhostState.Dead) return;
 
-        deathRemaining = Mathf.Max(0f, deathRemaining - deltaTime);
-        if (deathRemaining > 0f) return false;
-
+        deathRemaining = 0f;
         State = GhostState.Normal;
+
         if (fearRemaining > 3f)
             EnterScared();
         else if (fearRemaining > 0f)
             EnterRecovering();
         else
             EnterNormal();
+    }
 
+    public bool TickDeath(float deltaTime, float fearRemaining)
+    {
+        if (State != GhostState.Dead) return false;
+        if (transform.position != startingPosition)
+            return false;
+
+        deathRemaining = Mathf.Max(0f, deathRemaining - deltaTime);
+        if (deathRemaining > 0f) return false;
+
+        Revive(fearRemaining);
         return true;
     }
 }

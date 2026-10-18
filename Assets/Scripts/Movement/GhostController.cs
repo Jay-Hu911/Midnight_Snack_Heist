@@ -137,6 +137,9 @@ public class GhostController : MonoBehaviour
         currentDirection = Vector2Int.zero;
         transform.position = Vector3.MoveTowards(
             transform.position, homePosition, moveSpeed * Time.deltaTime);
+
+        if (transform.position == homePosition)
+            ghostState.Revive(gameManager.FearRemaining);
     }
 
     private void AdvanceMove()

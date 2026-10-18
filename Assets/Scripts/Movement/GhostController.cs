@@ -29,6 +29,9 @@ public class GhostController : MonoBehaviour
     private Vector3[] exitRoute;
     private int exitRouteIndex;
     private bool isLeavingHouse;
+    private bool isOuterPatrolling;
+    private Dictionary<Vector2Int, int> stepsToOuterCorner;
+    private static readonly Vector2Int OuterCornerCell = new Vector2Int(12, -13);
 
     public int GhostNumber => ghostNumber;
     public Vector3 HomePosition => homePosition;
@@ -56,6 +59,7 @@ public class GhostController : MonoBehaviour
         exitRoute = null;
         moveElapsed = 0f;
         currentDirection = Vector2Int.zero;
+        isOuterPatrolling = false;
     }
 
     private void BuildExitRoute()
@@ -84,6 +88,7 @@ public class GhostController : MonoBehaviour
 
         exitRoute = route.ToArray();
     }
+
     private void Awake()
     {
         homePosition = transform.position;
@@ -92,8 +97,8 @@ public class GhostController : MonoBehaviour
     private void Update()
     {
         if (gameManager == null || !gameManager.CanInteract ||
-        ghostState == null || ghostState.State == GhostStateController.GhostState.Dead)
-        return;
+            ghostState == null || ghostState.State == GhostStateController.GhostState.Dead)
+            return;
 
         if (!isRoaming)
             BeginRoaming();
@@ -131,6 +136,7 @@ public class GhostController : MonoBehaviour
             isMoving = false;
         }
     }
+
     private void StartNextExitMove()
     {
         moveStart = transform.position;
@@ -145,12 +151,11 @@ public class GhostController : MonoBehaviour
         else
             currentDirection = difference.y > 0f ? Vector2Int.up : Vector2Int.down;
     }
-    private void ChooseNextCell()
-    {
-        if (levelGenerator == null) return;
 
+    private List<Vector2Int> GetLegalDirections()
+    {
+        List<Vector2Int> choices = new List<Vector2Int>();
         Vector2Int reverse = -currentDirection;
-        Vector2Int chosen = Vector2Int.zero;
 
         foreach (Vector2Int direction in Directions)
         {
@@ -160,22 +165,131 @@ public class GhostController : MonoBehaviour
                 new Vector3(direction.x, direction.y, 0f);
 
             if (levelGenerator.CanPlayerEnter(new Vector2(next.x, next.y)))
-            {
-                chosen = direction;
-                break;
-            }
+                choices.Add(direction);
         }
 
-        if (chosen == Vector2Int.zero && currentDirection != Vector2Int.zero)
+        if (choices.Count == 0 && currentDirection != Vector2Int.zero)
         {
             Vector3 back = transform.position +
                 new Vector3(reverse.x, reverse.y, 0f);
 
             if (levelGenerator.CanPlayerEnter(new Vector2(back.x, back.y)))
-                chosen = reverse;
+                choices.Add(reverse);
         }
 
-        if (chosen == Vector2Int.zero) return;
+        return choices;
+    }
+
+    private Vector2Int ChooseByDistance(List<Vector2Int> choices, bool moveAway)
+    {
+        if (player == null)
+            return choices[Random.Range(0, choices.Count)];
+
+        float currentDistance = (player.transform.position - transform.position).sqrMagnitude;
+        List<Vector2Int> preferred = new List<Vector2Int>();
+
+        foreach (Vector2Int direction in choices)
+        {
+            Vector3 next = transform.position +
+                new Vector3(direction.x, direction.y, 0f);
+            float nextDistance = (player.transform.position - next).sqrMagnitude;
+
+            if (moveAway && nextDistance >= currentDistance - 0.0001f)
+                preferred.Add(direction);
+            else if (!moveAway && nextDistance <= currentDistance + 0.0001f)
+                preferred.Add(direction);
+        }
+
+        List<Vector2Int> pool = preferred.Count > 0 ? preferred : choices;
+        return pool[Random.Range(0, pool.Count)];
+    }
+
+    private Vector2Int CellKey(Vector3 position)
+    {
+        return new Vector2Int(Mathf.RoundToInt(position.x - 0.5f),
+                              Mathf.RoundToInt(position.y));
+    }
+
+    private void BuildOuterDistances()
+    {
+        stepsToOuterCorner = new Dictionary<Vector2Int, int>();
+        Queue<Vector2Int> pending = new Queue<Vector2Int>();
+        stepsToOuterCorner[OuterCornerCell] = 0;
+        pending.Enqueue(OuterCornerCell);
+
+        while (pending.Count > 0)
+        {
+            Vector2Int cell = pending.Dequeue();
+            foreach (Vector2Int direction in Directions)
+            {
+                Vector2Int next = cell + direction;
+                if (stepsToOuterCorner.ContainsKey(next)) continue;
+                Vector2 center = new Vector2(next.x + 0.5f, next.y);
+                if (!levelGenerator.CanPlayerEnter(center)) continue;
+
+                stepsToOuterCorner[next] = stepsToOuterCorner[cell] + 1;
+                pending.Enqueue(next);
+            }
+        }
+    }
+
+    private Vector2Int ChooseClockwise(List<Vector2Int> choices)
+    {
+        if (stepsToOuterCorner == null)
+            BuildOuterDistances();
+
+        if (!isOuterPatrolling && CellKey(transform.position) == OuterCornerCell)
+            isOuterPatrolling = true;
+
+        if (!isOuterPatrolling)
+        {
+            Vector2Int best = choices[0];
+            int bestSteps = int.MaxValue;
+            foreach (Vector2Int direction in choices)
+            {
+                Vector3 next = transform.position +
+                    new Vector3(direction.x, direction.y, 0f);
+                if (stepsToOuterCorner.TryGetValue(CellKey(next), out int steps) &&
+                    steps < bestSteps)
+                {
+                    best = direction;
+                    bestSteps = steps;
+                }
+            }
+            return best;
+        }
+
+        // Keep the outside wall on the ghost's left while moving clockwise.
+        Vector2Int left = new Vector2Int(-currentDirection.y, currentDirection.x);
+        if (choices.Contains(left)) return left;
+        if (choices.Contains(currentDirection)) return currentDirection;
+        Vector2Int right = new Vector2Int(currentDirection.y, -currentDirection.x);
+        if (choices.Contains(right)) return right;
+        return choices[0];
+    }
+
+    private void ChooseNextCell()
+    {
+        if (levelGenerator == null) return;
+
+        List<Vector2Int> choices = GetLegalDirections();
+        if (choices.Count == 0) return;
+
+        bool scared = ghostState.State == GhostStateController.GhostState.Scared ||
+                      ghostState.State == GhostStateController.GhostState.Recovering;
+        int behavior = scared ? 1 : ghostNumber;
+        if (ghostNumber == 4 && scared)
+            isOuterPatrolling = false;
+
+        Vector2Int chosen;
+        if (behavior == 1)
+            chosen = ChooseByDistance(choices, true);
+        else if (behavior == 2)
+            chosen = ChooseByDistance(choices, false);
+        else if (behavior == 4)
+            chosen = ChooseClockwise(choices);
+        else
+            chosen = choices[Random.Range(0, choices.Count)];
 
         moveStart = transform.position;
         moveTarget = moveStart + new Vector3(chosen.x, chosen.y, 0f);

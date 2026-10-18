@@ -283,12 +283,6 @@ public class GameManager : MonoBehaviour
                         if (ghost != null) ghost.EnterRecovering();
             }
         }
-
-        bool ghostRevived = false;
-        foreach (GhostStateController ghost in ghosts)
-            if (ghost != null && ghost.TickDeath(Time.deltaTime, FearRemaining))
-                ghostRevived = true;
-        if (ghostRevived) RefreshMusic();
     }
 
     private void RefreshMusic()

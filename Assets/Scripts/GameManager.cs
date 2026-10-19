@@ -285,7 +285,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void RefreshMusic()
+    public void RefreshMusic()
     {
         if (musicController == null) return;
 

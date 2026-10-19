@@ -147,7 +147,10 @@ public class GhostController : MonoBehaviour
             transform.position, homePosition, GetCurrentSpeed() * Time.deltaTime);
 
         if (transform.position == homePosition)
+        {
             ghostState.Revive(gameManager.FearRemaining);
+            gameManager.RefreshMusic();
+        }
     }
 
     private void AdvanceMove()

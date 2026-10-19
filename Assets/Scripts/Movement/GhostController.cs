@@ -21,7 +21,7 @@ public class GhostController : MonoBehaviour
     private Vector3 homePosition;
     private Vector3 moveStart;
     private Vector3 moveTarget;
-    private float moveElapsed;
+    private float moveProgress;
     private bool isMoving;
     private bool isRoaming;
     private Vector2Int currentDirection = Vector2Int.zero;
@@ -57,7 +57,7 @@ public class GhostController : MonoBehaviour
         isLeavingHouse = false;
         exitRouteIndex = 0;
         exitRoute = null;
-        moveElapsed = 0f;
+        moveProgress = 0f;
         currentDirection = Vector2Int.zero;
         isOuterPatrolling = false;
     }
@@ -128,6 +128,14 @@ public class GhostController : MonoBehaviour
         ChooseNextCell();
     }
 
+    private float GetCurrentSpeed()
+    {
+        if (ghostState.State == GhostStateController.GhostState.Normal)
+            return moveSpeed;
+
+        return moveSpeed * 0.5f;
+    }
+
     private void MoveDeadHome()
     {
         // 返巢不走格子路线，因此也不会被墙壁阻挡。
@@ -136,7 +144,7 @@ public class GhostController : MonoBehaviour
         isLeavingHouse = false;
         currentDirection = Vector2Int.zero;
         transform.position = Vector3.MoveTowards(
-            transform.position, homePosition, moveSpeed * Time.deltaTime);
+            transform.position, homePosition, GetCurrentSpeed() * Time.deltaTime);
 
         if (transform.position == homePosition)
             ghostState.Revive(gameManager.FearRemaining);
@@ -144,12 +152,11 @@ public class GhostController : MonoBehaviour
 
     private void AdvanceMove()
     {
-        moveElapsed += Time.deltaTime;
-        float duration = Vector3.Distance(moveStart, moveTarget) / Mathf.Max(0.01f, moveSpeed);
-        float progress = Mathf.Clamp01(moveElapsed / duration);
-        transform.position = Vector3.Lerp(moveStart, moveTarget, progress);
+        float distance = Vector3.Distance(moveStart, moveTarget);
+        moveProgress += GetCurrentSpeed() * Time.deltaTime / Mathf.Max(0.01f, distance);
+        transform.position = Vector3.Lerp(moveStart, moveTarget, Mathf.Clamp01(moveProgress));
 
-        if (progress >= 1f)
+        if (moveProgress >= 1f)
         {
             transform.position = moveTarget;
             isMoving = false;
@@ -160,7 +167,7 @@ public class GhostController : MonoBehaviour
     {
         moveStart = transform.position;
         moveTarget = exitRoute[exitRouteIndex];
-        moveElapsed = 0f;
+        moveProgress = 0f;
         isMoving = true;
         exitRouteIndex++;
 
@@ -312,7 +319,7 @@ public class GhostController : MonoBehaviour
 
         moveStart = transform.position;
         moveTarget = moveStart + new Vector3(chosen.x, chosen.y, 0f);
-        moveElapsed = 0f;
+        moveProgress = 0f;
         currentDirection = chosen;
         isMoving = true;
     }

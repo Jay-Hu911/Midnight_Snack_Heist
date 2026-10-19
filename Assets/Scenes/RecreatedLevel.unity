@@ -8667,6 +8667,7 @@ GameObject:
   - component: {fileID: 241197002}
   - component: {fileID: 241197001}
   - component: {fileID: 241197003}
+  - component: {fileID: 900300000000000004}
   m_Layer: 0
   m_Name: Cat04_Animated
   m_TagString: Untagged
@@ -20067,6 +20068,7 @@ GameObject:
   - component: {fileID: 634357209}
   - component: {fileID: 634357208}
   - component: {fileID: 634357210}
+  - component: {fileID: 900300000000000001}
   m_Layer: 0
   m_Name: Cat01_Animated
   m_TagString: Untagged
@@ -31531,6 +31533,7 @@ GameObject:
   - component: {fileID: 1025343964}
   - component: {fileID: 1025343963}
   - component: {fileID: 1025343965}
+  - component: {fileID: 900300000000000002}
   m_Layer: 0
   m_Name: Cat02_Animated
   m_TagString: Untagged
@@ -32837,6 +32840,7 @@ GameObject:
   - component: {fileID: 1052537808}
   - component: {fileID: 1052537807}
   - component: {fileID: 1052537809}
+  - component: {fileID: 900300000000000003}
   m_Layer: 0
   m_Name: Cat03_Animated
   m_TagString: Untagged
@@ -75944,3 +75948,79 @@ SceneRoots:
   - {fileID: 453918391}
   - {fileID: 1223791889}
   - {fileID: 1022050231}
+
+--- !u!114 &900300000000000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 634357206}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 085b66d278e145b38ac0fab1e3d27310, type: 3}
+  m_Name: ''
+  m_EditorClassIdentifier: Assembly-CSharp::GhostController
+  ghostNumber: 1
+  ghostAnimator: {fileID: 634357208}
+  ghostState: {fileID: 634357210}
+  levelGenerator: {fileID: 19722722}
+  player: {fileID: 410930577}
+  gameManager: {fileID: 1022050230}
+
+--- !u!114 &900300000000000002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1025343961}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 085b66d278e145b38ac0fab1e3d27310, type: 3}
+  m_Name: ''
+  m_EditorClassIdentifier: Assembly-CSharp::GhostController
+  ghostNumber: 2
+  ghostAnimator: {fileID: 1025343963}
+  ghostState: {fileID: 1025343965}
+  levelGenerator: {fileID: 19722722}
+  player: {fileID: 410930577}
+  gameManager: {fileID: 1022050230}
+
+--- !u!114 &900300000000000003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1052537805}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 085b66d278e145b38ac0fab1e3d27310, type: 3}
+  m_Name: ''
+  m_EditorClassIdentifier: Assembly-CSharp::GhostController
+  ghostNumber: 3
+  ghostAnimator: {fileID: 1052537807}
+  ghostState: {fileID: 1052537809}
+  levelGenerator: {fileID: 19722722}
+  player: {fileID: 410930577}
+  gameManager: {fileID: 1022050230}
+
+--- !u!114 &900300000000000004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 241196999}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 085b66d278e145b38ac0fab1e3d27310, type: 3}
+  m_Name: ''
+  m_EditorClassIdentifier: Assembly-CSharp::GhostController
+  ghostNumber: 4
+  ghostAnimator: {fileID: 241197001}
+  ghostState: {fileID: 241197003}
+  levelGenerator: {fileID: 19722722}
+  player: {fileID: 410930577}
+  gameManager: {fileID: 1022050230}

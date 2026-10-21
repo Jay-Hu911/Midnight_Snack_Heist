@@ -38,6 +38,11 @@ public class StartMenuController : MonoBehaviour
         SceneManager.LoadScene("RecreatedLevel");
     }
 
+    public void OpenLevel2()
+    {
+        SceneManager.LoadScene("InnovationScene");
+    }
+
     public void ReturnToMenu()
     {
     SceneManager.LoadScene("StartScene");

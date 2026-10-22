@@ -8,6 +8,7 @@ public class PlayerInteractionController : MonoBehaviour
     [SerializeField] private GameManager gameManager;
     [SerializeField] private GameSoundEffects soundEffects;
     [SerializeField] private CherryController cherryController;
+    [SerializeField] private NightVisionController nightVision;
 
     private readonly Dictionary<Vector2Int, GameObject> normalFoodsByCell = new();
     private readonly Dictionary<Vector2Int, GameObject> powerFoodsByCell = new();
@@ -95,6 +96,8 @@ public class PlayerInteractionController : MonoBehaviour
 
         if (gameManager != null)
             gameManager.AddScore(100);
+        if (nightVision != null)
+            nightVision.AddCharge();
 
         if (soundEffects != null)
             soundEffects.PlayEatBonus();

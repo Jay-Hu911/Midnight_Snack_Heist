@@ -190,7 +190,7 @@ public class GameManager : MonoBehaviour
         if (IsGameOver) return;
 
         IsGameOver = true;
-        SaveBestRecord("Level1");
+        SaveBestRecord(GetRecordLevelName());
         if (playerController != null) playerController.SetGameplayEnabled(false);
         foreach (GhostStateController ghost in ghosts)
             if (ghost != null) ghost.SetPaused(true);
@@ -199,6 +199,14 @@ public class GameManager : MonoBehaviour
         if (overlayText != null) overlayText.text = "GAME OVER";
         if (overlay != null) overlay.SetActive(true);
         StartCoroutine(ReturnToMenuAfterDelay());
+    }
+
+    private string GetRecordLevelName()
+    {
+        if (SceneManager.GetActiveScene().name == "InnovationScene")
+            return "Level2";
+
+        return "Level1";
     }
 
     private void SaveBestRecord(string levelName)

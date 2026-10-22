@@ -33,6 +33,7 @@ public class PacStudentController : MonoBehaviour
     private Vector3 startingPosition;
 
     public bool CanMove { get; private set; } = true;
+    public Vector2Int FacingDirection { get; private set; } = Vector2Int.right;
 
     private void Awake()
     {
@@ -140,6 +141,7 @@ public class PacStudentController : MonoBehaviour
         if (moveParticles != null && !moveParticles.isEmitting)
         moveParticles.Play();
         currentInput = direction;
+        FacingDirection = direction;
         isMoving = true;
         wallBumpPlayed = false;
         return true;
@@ -285,6 +287,7 @@ public class PacStudentController : MonoBehaviour
         isMoving = false;
         lastInput = Vector2Int.zero;
         currentInput = Vector2Int.zero;
+        FacingDirection = Vector2Int.right;
         wallBumpPlayed = false;
 
         if (moveAudioSource != null) moveAudioSource.Stop();

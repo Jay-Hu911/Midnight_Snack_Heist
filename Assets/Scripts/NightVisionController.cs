@@ -77,7 +77,7 @@ public class NightVisionController : MonoBehaviour
     private void UpdateLightningText()
     {
         if (lightningText != null)
-            lightningText.text = "LIGHTNING " + charges + "/3\nSPACE";
+            lightningText.text = "LIGHTNING\n" + charges + "/3\nSPACE";
     }
 
     private bool CanSee(Vector3 position)

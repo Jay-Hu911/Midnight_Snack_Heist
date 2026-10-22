@@ -40,7 +40,6 @@ public class GhostController : MonoBehaviour
     {
         isRoaming = true;
 
-        // 测试时幽灵也可能被放在普通走廊；只有在出生点才执行离巢路线。
         if ((transform.position - homePosition).sqrMagnitude > 0.01f)
             return;
 
@@ -79,13 +78,12 @@ public class GhostController : MonoBehaviour
         if (side < 0f)
             route.Add(new Vector3(gateX, -1f, z));
 
-        route.Add(new Vector3(gateX, side * 2f, z)); // Ghost Wall
+        route.Add(new Vector3(gateX, side * 2f, z));
         route.Add(new Vector3(gateX, side * 3f, z));
         route.Add(new Vector3(laneX, side * 3f, z));
         route.Add(new Vector3(laneX, side * 4f, z));
         route.Add(new Vector3(laneX, side * 5f, z));
-        route.Add(new Vector3(laneX, side * 6f, z)); // 普通走廊
-
+        route.Add(new Vector3(laneX, side * 6f, z));
         exitRoute = route.ToArray();
     }
 
